@@ -49,7 +49,7 @@ otherwise the geometry structure will be distorted. In all the four datasets, se
 ### RNAmix
 #### Preprocess
 We use the workflow of Seurat (v4.0.1) on the RNAmix dataset including procedures like normalization, scaling, PCA, clustering and visualization. We follow the standard procedures of 
-Seurat, which could also be found in their toutrial (\web)
+Seurat, which could also be found in their toutrial of PBMC3k<https://satijalab.org/seurat/articles/pbmc3k_tutorial.html>.
 ```r
 library(Seurat)
 # loading the dataset, the variable 'dir' is the path of file 'data'. 
