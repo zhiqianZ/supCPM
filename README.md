@@ -52,7 +52,7 @@ We use the workflow of Seurat (v4.0.1) on the RNAmix dataset including procedure
 Seurat, which could also be found in their toutrial of PBMC3k <https://satijalab.org/seurat/articles/pbmc3k_tutorial.html>.
 ```r
 library(Seurat)
-# loading the dataset, the variable 'dir' is the path of file 'data'. 
+# Load the dataset where the variable 'dir' is the path of file 'data'. 
 rnamix.data <- read.csv(paste0(dir,"/data/RNAmix/RNAmix_celseq2.count.csv"))
 # Create the Seurat Object 
 RNAmix.seurat <- CreateSeuratObject(counts = rnamix.data)
@@ -86,7 +86,9 @@ rnamix_cpm = supCPM(rnamix_pca(:,1:10),rnamix_label,2,1,0,1,0,8,1000,900,123,1);
 ```
 Run the supCPM
 ```
+# Euclidean distance
 rnamix_supCPM_eu = supCPM(rnamix_pca(:,1:10),rnamix_label,2,1,0,2,0.7,7,500,2000,123,1.3);
+# Geodesic distance
 rnamix_supCPM_geo = supCPM(rnamix_pca(:,1:10),rnamix_label,2,1,1,1,0.7,7,400,2000,123,1.3);
 ```
 
