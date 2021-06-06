@@ -134,6 +134,22 @@ for (i in 2:9){
     theme(plot.title = element_text(hjust = 0.5,size=20))+
     coord_equal(xlim=x,ylim=y)
 }
+# add highlight
+pbmc.plot[[8]] <- pbmc.plot[[8]]+ 
+  annotate("rect", xmin=16.5, xmax=18.5, ymin=-10.2, ymax=-8.8, 
+           fill=NA, colour="black")
+pbmc.plot[[9]] <- pbmc.plot[[9]]+ 
+  annotate("rect", xmin=1, xmax=2.5, ymin=-10, ymax=-8.5, 
+           fill=NA, colour="black")
+pbmc.plot[[4]] <- pbmc.plot[[4]]+
+  annotate("rect", xmin=8, xmax=11.5, ymin=10, ymax=13, 
+           fill=NA, colour="black")
+pbmc.plot[[5]] <- pbmc.plot[[5]]+
+  annotate("rect", xmin=5.5, xmax=7.5, ymin=-11.5, ymax=-9.5, 
+           fill=NA, colour="black")
+pbmc.plot[[6]] <- pbmc.plot[[6]]+
+  annotate("rect", xmin=0.5, xmax=3.5, ymin=15, ymax=18, 
+           fill=NA, colour="black")
 
 # Plot for cancer
 cancer.plot <- list()
@@ -273,13 +289,17 @@ metric.data.frame$dataset <- factor(metric.data.frame$dataset, levels=c('Synthet
 
 
 # need jittering
-set.seed(4321)
-jitter <- c(1,14,51,74,114,117,119,131,121,
-            3,15,52,75,115,118,120,132,122)
+set.seed(321)
+jitter <- c(6,74,85,95,117,120)
 not.jitter <- (1:160)[-jitter]
 metric.plot <- ggplot(data=metric.data.frame[not.jitter,])+
   geom_point(aes(x=method,y=Scores,color=metric),size=2.2,pch=16,alpha=0.7)+
-  geom_jitter(aes(x=method,y=Scores,color=metric),data=metric.data.frame[jitter,],size=2.2,pch=16,alpha=0.7,height = 0,width=0.15)+
+  geom_jitter(aes(x=method,y=Scores,color=metric),data=metric.data.frame[jitter[1],],size=2.2,pch=16,alpha=0.7,height = 0,width=0.25)+
+  geom_jitter(aes(x=method,y=Scores,color=metric),data=metric.data.frame[jitter[2],],size=2.2,pch=16,alpha=0.7,height = 0,width=0.25)+
+  geom_jitter(aes(x=method,y=Scores,color=metric),data=metric.data.frame[jitter[3],],size=2.2,pch=16,alpha=0.7,height = 0,width=0.25)+
+  geom_jitter(aes(x=method,y=Scores,color=metric),data=metric.data.frame[jitter[4],],size=2.2,pch=16,alpha=0.7,height = 0,width=0.25)+
+  geom_jitter(aes(x=method,y=Scores,color=metric),data=metric.data.frame[jitter[5],],size=2.2,pch=16,alpha=0.7,height = 0,width=0.55)+
+  geom_jitter(aes(x=method,y=Scores,color=metric),data=metric.data.frame[jitter[6],],size=2.2,pch=16,alpha=0.7,height = 0,width=0.25)+
   facet_wrap(~dataset,ncol=4)+theme(axis.text.x = element_text(angle = 40, hjust = 0.7, vjust = 0.8,size=10))+
   xlab('')+scale_color_manual(values=c('#4C9E00','#E67350','#7E92E6','#CFC03E','#AA68AC'))+
   theme(plot.title = element_text(hjust = 0.5,size=20))
@@ -288,7 +308,6 @@ metric.plot
 pdf(file = paste0(figure.dir,"Metrics.pdf"),width=12,height=5)
 print(metric.plot)
 dev.off()
-
 
 
 

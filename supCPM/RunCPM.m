@@ -1,12 +1,14 @@
-path = '.../result/output/';
-addpath(".../supPCA");
+%%path = ...  % manually set the path of output file 
+%%addpath(".../supPCA");  % add the path of supPCA
+%%addpath(".../drtoolbox") % add the path of drtoolbox
+%%addpath(".../umap") % add the path of umap
 rnamix_pca = readmatrix([path,'RNAmix_pca.csv'],'Range',[2 2]);
 rnamix_scale = readmatrix([path,'RNAmix_scale.csv'],'Range',[2 2]);
 rnamix_scale = rnamix_scale';
 rnamix_tsne = readmatrix([path,'RNAmix_tsne.csv'],'Range',[2 2]);
 rnamix_umap = readmatrix([path,'RNAmix_umap.csv'],'Range',[2 2]);
 rnamix_label = readmatrix([path,'RNAmix_label.csv'],'Range',[2 2]);
-%order = [5,6,4,2,3,1,7];
+
 pbmc_pca = readmatrix([path,'pbmc3k_pca.csv'],'Range',[2 2]);
 pbmc_scale = readmatrix([path,'pbmc3k_scale.csv'],'Range',[2 2]);
 pbmc_scale = pbmc_scale';
@@ -28,11 +30,10 @@ cancer_tsne = readmatrix([path,'cancer_tsne.csv'],'Range',[2 2]);
 cancer_umap = readmatrix([path,'cancer_umap.csv'],'Range',[2 2]);
 cancer_label = readmatrix([path,'cancer_label.csv'],'Range',[2 3]);
 %% Synthetic
-%data,label,no_dims,degree,distance,w,ratio,k,factor,change,niter,seed
-% run CPM and supCPM
-synthetic_cpm = supCPM(synthetic_pca,synthetic_label,2,1,1,5,0,7,1,600,500,123);
-synthetic_supCPM_eu =  supCPM(synthetic_pca,synthetic_label,2,2,0,5,0.5,7,1.2,500,2000,123);
-synthetic_supCPM_geo =  supCPM(synthetic_pca,synthetic_label,2,1,1,5,0.5,7,1.1,500,2000,123);
+%data,label,no_dims,compel_force,geodist,degree,ratio,k,change,niter,seed,factor
+synthetic_cpm = supCPM(synthetic_pca,synthetic_label,2,0,1,1,0,7,600,500,123,1);
+synthetic_supCPM_eu = supCPM(synthetic_pca,synthetic_label,2,0,0,2,0.5,7,1000,2000,123,1.3);
+synthetic_supCPM_geo = supCPM(synthetic_pca,synthetic_label,2,1,1,1,0.4,7,500,2000,123,1.3);
 % run SupUMAP
 synthetic_supUMAP = run_umap([synthetic_pca,synthetic_label],...,
                              'label_column','end','metric','cosine');
@@ -69,15 +70,17 @@ metric_synthetic = [cv_geo,knc_geo,cpd_geo,fisher_geo,knn_geo; cv_eu,knc_eu,cpd_
                     cv_spca,knc_spca,cpd_spca,fisher_spca,knn_spca;  cv_umap,knc_umap,cpd_umap,fisher_umap,knn_umap]';
 %% RNAmix
 % run CPM & supCPM
-rnamix_cpm = supCPM(rnamix_pca(:,1:10),rnamix_label,2,2,0,2,0,10,1,1040,900,123);
-rnamix_supCPM_eu = supCPM(rnamix_pca(:,1:10),rnamix_label,2,2,0,5,0.8,10,1.1,500,2000,123);
-rnamix_supCPM_geo = supCPM(rnamix_pca(:,1:10),rnamix_label,2,1,1,5,0.7,10,1.1,400,2000,123);
+%data,label,no_dims,compel_force,geodist,degree,ratio,k,change,niter,seed,factor
+rnamix_cpm = supCPM(rnamix_pca(:,1:10),rnamix_label,2,1,0,1,0,8,1040,900,123,1);
+rnamix_supCPM_eu = supCPM(rnamix_pca(:,1:10),rnamix_label,2,1,0,2,0.7,7,500,2000,123,1.3);
+rnamix_supCPM_geo = supCPM(rnamix_pca(:,1:10),rnamix_label,2,1,1,1,0.7,7,400,2000,123,1.3);
 % run SupUMAP
 rnamix_supUMAP = run_umap([rnamix_pca(:,1:10),rnamix_label],'label_column','end',...
-                          'metric','cosine');
+        'metric','cosine');
+ 
 % run SupPCA
 param.ktype_y = 'delta_cls';
-param.kparam_y = 1;
+param.kparam_y = 1;         
 rnamix_supPCA = SPCA(rnamix_scale',(rnamix_label+1)',2,param);
 rnamix_supPCA = rnamix_supPCA';
 % MDS
@@ -96,6 +99,7 @@ rnamix_MDS = [rnamix_MDS,covar'];
 % Metric
 [cv_geo,knc_geo,cpd_geo,fisher_geo,knn_geo]     = embedding_quality(rnamix_supCPM_geo,rnamix_pca(:,1:10),rnamix_label,3,5,340);
 [cv_eu,knc_eu,cpd_eu,fisher_eu,knn_eu]        = embedding_quality(rnamix_supCPM_eu,rnamix_pca(:,1:10),rnamix_label,3,5,340);
+[cv_cpm,knc_cpm,cpd_cpm,fisher_cpm,knn_cpm]        = embedding_quality(rnamix_cpm,rnamix_pca(:,1:10),rnamix_label,3,5,340);
 [cv_tsne,knc_tsne,cpd_tsne,fisher_tsne,knn_tsne]     = embedding_quality(rnamix_tsne,rnamix_pca(:,1:10),rnamix_label,3,5,340);
 [cv_supUMAP,knc_supUMAP,cpd_supUMAP,fisher_supUMAP,knn_supUMAP]  = embedding_quality(rnamix_supUMAP,rnamix_pca(:,1:10),rnamix_label,3,5,340);
 [cv_pca,knc_pca,cpd_pca,fisher_pca,knn_pca]        = embedding_quality(rnamix_pca(:,1:2),rnamix_pca(:,1:10),rnamix_label,3,5,340);
@@ -108,9 +112,10 @@ metric_rnamix = [cv_geo,knc_geo,cpd_geo,fisher_geo,knn_geo;  cv_eu,knc_eu,cpd_eu
                  cv_spca,knc_spca,cpd_spca,fisher_spca,knn_spca;  cv_umap,knc_umap,cpd_umap,fisher_umap,knn_umap]';
 
 %% PBMC3k
-pbmc_cpm = supCPM(pbmc_pca(:,1:30),pbmc_label,2,2,1,5,0,7,1,500,400,123);
-pbmc_supCPM_eu = supCPM(pbmc_pca(:,1:30),pbmc_label,2,2,0,5,0.7,7,1.2,500,3000,123);
-pbmc_supCPM_geo= supCPM(pbmc_pca(:,1:30),pbmc_label,2,2,1,5,0.6,7,1.3,500,4000,123);
+%data,label,no_dims,compel_force,geodist,degree,ratio,k,change,niter,seed,factor
+pbmc_cpm = supCPM(pbmc_pca(:,1:30),pbmc_label,2,0,1,1,0,7,500,400,123,1);
+pbmc_supCPM_eu = supCPM(pbmc_pca(:,1:30),pbmc_label,2,1,0,2,0.7,7,500,3000,123,1.3);
+pbmc_supCPM_geo= supCPM(pbmc_pca(:,1:30),pbmc_label,2,1,1,1,0.6,7,500,3000,123,1.3);
 
 % run SupUMAP
 pbmc_supUMAP = run_umap([pbmc_pca(:,1:30),pbmc_label],'label_column','end',...
@@ -149,9 +154,10 @@ metric_pbmc = [cv_geo,knc_geo,cpd_geo,fisher_geo,knn_geo;  cv_eu,knc_eu,cpd_eu,f
                cv_spca,knc_spca,cpd_spca,fisher_spca,knn_spca;  cv_umap,knc_umap,cpd_umap,fisher_umap,knn_umap]';
 
 %% Cancer
-cancer_cpm = supCPM(cancer_pca(:,1:20),cancer_label,2,2,1,5,0,30,1,1100,1000,123);
-cancer_supCPM_eu =  supCPM(cancer_pca(:,1:20),cancer_label,2,3,0,5,0.7,7,1.1,500,3000,123);
-cancer_supCPM_geo =  supCPM(cancer_pca(:,1:20),cancer_label,2,2,1,5,0.6,30,1.1,1000,3000,123);
+%data,label,no_dims,compel_force,geodist,degree,ratio,k,change,niter,seed,factor
+cancer_cpm = supCPM(cancer_pca(:,1:20),cancer_label,2,0,1,1,0,30,510,500,123,1);
+cancer_supCPM_eu =  supCPM(cancer_pca(:,1:20),cancer_label,2,1,0,2,0.6,7,500,3000,123,1.3);
+cancer_supCPM_geo =  supCPM(cancer_pca(:,1:20),cancer_label,2,0,1,1,0.6,30,1000,3000,123,1.3);
 % run SupUMAP
 cancer_supUMAP = run_umap([cancer_pca(:,1:20),cancer_label],'label_column','end','metric','cosine');
 % run SupPCA

@@ -1,21 +1,25 @@
-function Dst = cdist(D,no_dims,w)
+function Dst = cdist(D,no_dims,compel_force)
 % The function computes the Capacity adjusted distance based on the pairwise
 % distance in the original metric
 % D: Pairwise distance matrix
 % no_dims: mapped dimension
 % (optional) w (=2 or 3): determines the dimension correction power 
-  n = size(D,1);   
-   if ~exist('w')
-       w = 2;
-   end
-     nscales = 11; % number of scales for dimension estimation
-     [dim,r] = compute_dim(sqrt(D),nscales,0.01);
+     n = size(D,1);   
+     nscales = 7; % number of scales for dimension estimation
+     [dim1,r] = compute_dim(sqrt(D),nscales,0.01);
+     if compel_force == 1
+         dim1(2) = 1.5*dim1(2);
+     end
      max_dim = 10*(no_dims-1);   % set an upper bound on the estimated dimension to avoid divergence when the data dimension is too big
-     dim(dim>max_dim) = max_dim;
-     dim(dim<no_dims) = no_dims;  %the lower bound on the estimated dimension is set to the mapped dimension
-     dim = (dim-no_dims)/max(dim)*min(w,max(dim)) + no_dims; % use the weighted sum of the estimated dimension and the embedded dimesion to compute the capacity adjusted distance
-     %  # change to smaller number 
-     r1 = prctile(sort(sqrt(D(:))),3); % a small postive number preventing dividing by 0 when defining the probability
+     ind = (dim1<max_dim);
+     dim = ones(size(dim1))*max_dim;
+     dim(ind) = dim1(ind);
+     dim(dim1<no_dims) = no_dims; %the lower bound on the estimated dimension is set to the mapped-to dimension
+    
+    % for i=1:nscales-1
+    %     dim(i+1)=max(dim(i),dim(i+1));
+    % end
+     r1 = prctile(sort(sqrt(D(:))),1); % a small postive number preventing dividing by 0 when defining the probability
      [~, I] = sort(D(:),'ascend');
      Dst = zeros(n,n);
      for  i = 1:n
@@ -25,12 +29,8 @@ function Dst = cdist(D,no_dims,w)
          end
      end
  
-     Dst(I) =  make_mono(sqrt(Dst(I)),sqrt(D(I)+r1^2));  % impose monotonicity
+      Dst(I) =  make_mono(sqrt(Dst(I)),sqrt(D(I)+r1^2));  % impose monotonicity
      Dst = sqrt(Dst);
-    % make D1 satisfy the triangle inequality 
-
-         
- 
 end
 function d = find_dim(r,dim,a)
 % find the estimated dimension at the scale r
@@ -52,3 +52,4 @@ for i = 2:length(x)
 end
 x = x.^2;
 end
+
