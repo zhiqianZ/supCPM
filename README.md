@@ -76,7 +76,7 @@ RNAmix.seurat <- RunTSNE(RNAmix.seurat, dims = 1:10)
 ```
 
 #### supCPM and CPM
-With the labels from SNN based clustering in Seurat and first 10 PCs, we are ready to run the code of supCPM and CPM.  The implementation of other visualization methods used in our paper could be found 
+With the labels from SNN based clustering in Seurat and first 10 PCs, we are ready to run the code of supCPM and CPM.  The settings of other visualization methods used in our paper could be found 
 in the file 'RunCPM.m' in detail. We use supUMAP from <https://www.mathworks.com/matlabcentral/fileexchange/71902-uniform-manifold-approximation-and-projection-umap> 
 and supPCA from Prof. Ali Ghodsi. 
 
