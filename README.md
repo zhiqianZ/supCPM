@@ -17,11 +17,11 @@ This repository provides the implementation of supCPM in our paper. supCPM is a 
 ## Tutorial
 We use an example in our paper, RNAmix, to illustrate how to use supCPM  and introduce the basic idea of tuning the parameter. 
 
-####Preprocess
+### Preprocess
 supCPM requires the scaled dataset and labels as the input. 
 
 
-####Parameters
+### Parameters
 **data**: a matrix of the input n*p dataset, where n is the cell number and p is the number of genes.
 
 **label**: a vector indicates the label for each cell. 
