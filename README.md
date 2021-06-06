@@ -31,7 +31,7 @@ supCPM requires the scaled dataset and labels as the input.
 **compel_force**:  takes the value 0 or 1.  compel_force=1 if user wants to pull clusters a bit apart; compel_force =0 if user wants the best preservation of the geometry.
 
 **geodist**: takes the value 0 or 1. 0 means the user wants to use Euclidean distance in the high diemensions, and 1 means the users wants to choose geodesic distance.  
-According to our experience,  we recomend to choose the Euclidean distance for clean dataet (less noisy) and choose geodesic distance for noisy dataset.    
+According to our experience,  we recomend to choose the Euclidean distance for clean data (less noisy) and choose geodesic distance for the noisy one.    
 
 **degree**: a scalar to choose the degree of freedom of high dimensions t-distribution. Normally, the value is set to be 1 if geodesic distance is chosen and 
 is set to 2 if Euclidean distance is used. Due to the supervised part of supCPM, 
@@ -39,7 +39,7 @@ the cluster's shape tends to shrink. This parameter could in some degree prevent
 
 **ratio**: takes the value from 0 to 1. A larger value means higher proportion of the supervised term. 
 
-**k**: choose the size of knn neighbors used in geodesic distance. This parameter will not influence the results of supCPM with Euclidean distance. 
+**k**: choose the size of knn neighbors used in geodesic distance. This parameter will not influence the results of supCPM with Euclidean distance.  The default value is set to 7.
 
 **change**: the number of iteration for CPM part. 
 
