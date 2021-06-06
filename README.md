@@ -49,7 +49,7 @@ otherwise the geometry structure will be distorted. In all the four datasets, se
 ### RNAmix
 #### Preprocess
 We use the workflow of Seurat (v4.0.1) on the RNAmix dataset including procedures like normalization, scaling, PCA, clustering and visualization. We follow the standard procedures of 
-Seurat, which could also be found in their toutrial of PBMC3k<https://satijalab.org/seurat/articles/pbmc3k_tutorial.html>.
+Seurat, which could also be found in their toutrial of PBMC3k <https://satijalab.org/seurat/articles/pbmc3k_tutorial.html>.
 ```r
 library(Seurat)
 # loading the dataset, the variable 'dir' is the path of file 'data'. 
@@ -76,7 +76,7 @@ RNAmix.seurat <- RunTSNE(RNAmix.seurat, dims = 1:10)
 ```
 
 #### supCPM and CPM
-With the labels from SNN based clustering in Seurat and first 10 PCs, we are ready to run the code of supCPM and CPM.  The settings of other visualization methods used in our paper could be found 
+With the labels from SNN based clustering in Seurat and first 10 PCs, we are ready to run the code of supCPM and CPM.  The settings for other visualization methods used in our paper could be found 
 in the file 'RunCPM.m' in detail. We use supUMAP from <https://www.mathworks.com/matlabcentral/fileexchange/71902-uniform-manifold-approximation-and-projection-umap> 
 and supPCA from Prof. Ali Ghodsi. 
 
