@@ -1,4 +1,4 @@
-# Supervised Capacity Preserved Mapping (supCPM):  a supervised visualization method for scRNA-seq data
+# Supervised Capacity Preserved Mapping (supCPM):  supervised visualization method of scRNAseq data
 This repository provides the implementation of supCPM in our paper. supCPM is a supervised visualization methods, which could result a more interpretable figure.   
 
 ## Descriptions

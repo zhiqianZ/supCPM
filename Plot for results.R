@@ -135,20 +135,32 @@ for (i in 2:9){
     coord_equal(xlim=x,ylim=y)
 }
 # add highlight
-pbmc.plot[[8]] <- pbmc.plot[[8]]+ 
-  annotate("rect", xmin=16.5, xmax=18.5, ymin=-10.2, ymax=-8.8, 
+pbmc.plot[[1]] <- pbmc.plot[[1]]+
+  annotate("rect", xmin=55, xmax=60.5, ymin=1, ymax=6, 
            fill=NA, colour="black")
-pbmc.plot[[9]] <- pbmc.plot[[9]]+ 
-  annotate("rect", xmin=1, xmax=2.5, ymin=-10, ymax=-8.5, 
+pbmc.plot[[2]] <- pbmc.plot[[2]]+
+  annotate("rect", xmin=1.4, xmax=7.5, ymin=-11, ymax=-5, 
+           fill=NA, colour="black")
+pbmc.plot[[3]] <- pbmc.plot[[3]]+
+  annotate("rect", xmin=-6.6, xmax=-2, ymin=0.5, ymax=4.5, 
            fill=NA, colour="black")
 pbmc.plot[[4]] <- pbmc.plot[[4]]+
-  annotate("rect", xmin=8, xmax=11.5, ymin=10, ymax=13, 
+  annotate("rect", xmin=8.7, xmax=11.6, ymin=9.5, ymax=12.5, 
            fill=NA, colour="black")
 pbmc.plot[[5]] <- pbmc.plot[[5]]+
-  annotate("rect", xmin=5.5, xmax=7.5, ymin=-11.5, ymax=-9.5, 
+  annotate("rect", xmin=5.5, xmax=7.5, ymin=-12, ymax=-10, 
            fill=NA, colour="black")
 pbmc.plot[[6]] <- pbmc.plot[[6]]+
   annotate("rect", xmin=0.5, xmax=3.5, ymin=15, ymax=18, 
+           fill=NA, colour="black")
+pbmc.plot[[7]] <- pbmc.plot[[7]]+
+  annotate("rect", xmin=-0.2, xmax=3.5, ymin=-9.5, ymax=-6, 
+           fill=NA, colour="black")
+pbmc.plot[[8]] <- pbmc.plot[[8]]+ 
+  annotate("rect", xmin=16.7, xmax=18.7, ymin=-10.4, ymax=-8.7, 
+           fill=NA, colour="black")
+pbmc.plot[[9]] <- pbmc.plot[[9]]+ 
+  annotate("rect", xmin=1, xmax=3, ymin=-10, ymax=-8.5, 
            fill=NA, colour="black")
 
 # Plot for cancer
