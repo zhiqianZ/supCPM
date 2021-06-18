@@ -6,7 +6,7 @@ function [MDS,knc,cpd,D,D2] = mds_quality(X,label,knn_class)
         center_high(n,:)  = mean(X(cl,:));
         n = n+1;
     end
-    MDS = mds(center_high);
+    MDS = mds(center_high,2,0);
     D  = pdist2(center_high,center_high);
     D2 = pdist2(MDS,MDS);
    nbrs1 = knnsearch(center_high,center_high,'k',knn_class+1);

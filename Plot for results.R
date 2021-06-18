@@ -1,8 +1,8 @@
 ## Plot the result
 library(ggplot2)
 library(cowplot)
-output.dir = '.../result/output/'
-figure.dir = '.../result/figures/'
+output.dir = '.../supCPM-main/results/output/'
+figure.dir = '.../supCPM-main/results/figures/'
 # color
 color.pbmc <- rgb(matrix(c(240,128,128, 178,34,34, 0,206,209,
                            50,205,50,   65,105,225,255,215,0, 
@@ -231,7 +231,7 @@ for (i in 2:9){
 
 # save
 pdf(file = paste0(figure.dir,"Synthetic Data.pdf"),width=15,height=15)
-a=plot_grid(plotlist = synthetic.plot,ncol=2,labels = letters[1:9],
+a=plot_grid(plotlist = synthetic.plot,ncol=3,labels = letters[1:9],
             label_size = 20,label_fontface ='bold',scale=0.95,axis='l')
 print(a)
 dev.off()

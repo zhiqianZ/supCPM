@@ -1,5 +1,5 @@
-dir = '...' # where the file locate 
-result.dir = '/result/output/'
+dir = '.../supCPM-main'  # where files locate
+result.dir = '/results/output/'
 library(Seurat)
 library(Matrix)
 library(tidyverse)
@@ -98,7 +98,7 @@ rnamix <- RunSeurat(rnamix.data, npcs = 10, norm='log', resolution = 1, nfeature
 
 
 ##################### Cancer #######################
-cancer_data <- load_mixseq_data(".../data/rna/DMSO_24hr_expt1","cancer")
+cancer_data <- load_mixseq_data(paste0(dir,"/data/Cancer/DMSO_24hr_expt1"),"cancer")
 # filter cells
 cancer_meta <- cancer_data@meta.data
 cell_quality <- cancer_meta['cell_quality']
