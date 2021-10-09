@@ -1,4 +1,4 @@
-function [dim,r] = compute_dim1(D,nscales,smallest_scale)
+function [dim,r] = compute_dim(D,nscales,smallest_scale,val)
 %This function estimates the intrinsic dimension at various scales
 % nscales: total number of scales
 % smallest_scale: the smallest scale in consideration
@@ -6,20 +6,26 @@ function [dim,r] = compute_dim1(D,nscales,smallest_scale)
 
 %compute the radius at each scale
       factor = (1/smallest_scale)^(1/nscales);
-      val = sort((D(:)));
       r = zeros(nscales,1);
-     
       D5 = [];
       n = size(D,1);
-       for i=1:n         
-                dist = sort(D(:,i));
-                D5=[D5; dist(2:10)];             
-       end
-        
-       r(1) = prctile(D5,100);
-       r1 = median(D5);
+%        for i=1:n
+%                 %dist = sort(D(:,i));
+%                 dist = mink(D(:,i),10);
+%                 D5=[D5; dist(2:10)];             
+%        end
+        D5 = mink(D,10,2);
+        D5 = D5(:,2:10);
+       r(1) = prctile(D5(:),100);
+       r1 = median(D5(:));
+       percens = [];
        for i = 2:nscales
-          r(i) = prctile(val,factor^i/factor^nscales*100);
+           percens = [percens,factor^i/factor^nscales*100];
+       end
+       %percens = prctile(val,percens);
+       percens = val(ceil(percens*length(val)/100));
+       for i = 2:nscales
+          r(i) = percens(i-1);
           r(i) = max(r(i-1)*1.1,r(i));
        end
        %r1 = prctile(val,1/factor^nscales*100);
@@ -28,12 +34,12 @@ function [dim,r] = compute_dim1(D,nscales,smallest_scale)
        [dim(1),c] =  corr_dim(D,r1,r(1));
         s = zeros(nscales,1);
       
-        for i=1:n         
-                dist = D(:,i);
-                for j=1:nscales
-                s(j) = s(j) + length(find(dist < r(j)));
-                end
+
+        for j = 1:nscales
+           mat = max(0,sign(r(j)-D));
+           s(j) = sum(mat(:));
         end
+        clear mat;
         for j=1:nscales
             Cr(j) = (1 / (n * (n - 1))) * s(j);
         end

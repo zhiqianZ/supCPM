@@ -302,7 +302,7 @@ metric.data.frame$dataset <- factor(metric.data.frame$dataset, levels=c('Synthet
 
 # need jittering
 set.seed(321)
-jitter <- c(6,74,85,95,117,120)
+jitter <- c(6,74,85,95,117,120,127,143)
 not.jitter <- (1:160)[-jitter]
 metric.plot <- ggplot(data=metric.data.frame[not.jitter,])+
   geom_point(aes(x=method,y=Scores,color=metric),size=2.2,pch=16,alpha=0.7)+
@@ -312,6 +312,8 @@ metric.plot <- ggplot(data=metric.data.frame[not.jitter,])+
   geom_jitter(aes(x=method,y=Scores,color=metric),data=metric.data.frame[jitter[4],],size=2.2,pch=16,alpha=0.7,height = 0,width=0.25)+
   geom_jitter(aes(x=method,y=Scores,color=metric),data=metric.data.frame[jitter[5],],size=2.2,pch=16,alpha=0.7,height = 0,width=0.55)+
   geom_jitter(aes(x=method,y=Scores,color=metric),data=metric.data.frame[jitter[6],],size=2.2,pch=16,alpha=0.7,height = 0,width=0.25)+
+  geom_jitter(aes(x=method,y=Scores,color=metric),data=metric.data.frame[jitter[7],],size=2.2,pch=16,alpha=0.7,height = 0,width=0.1)+
+  geom_jitter(aes(x=method,y=Scores,color=metric),data=metric.data.frame[jitter[8],],size=2.2,pch=16,alpha=0.7,height = 0,width=0.2)+
   facet_wrap(~dataset,ncol=4)+theme(axis.text.x = element_text(angle = 40, hjust = 0.7, vjust = 0.8,size=10))+
   xlab('')+scale_color_manual(values=c('#4C9E00','#E67350','#7E92E6','#CFC03E','#AA68AC'))+
   theme(plot.title = element_text(hjust = 0.5,size=20))

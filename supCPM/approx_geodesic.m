@@ -20,7 +20,6 @@ function D = approx_geodesic(W)
      Y = nystrom(sample_column.^2,randindex(1:i),test_set).^0.5;
      if norm(Y-test_column)<3e-2*norm(test_column)
          break;
-         draw
      end
      %temp_st = find(min([sample_column';sample_column'])> prctile(min([sample_column';sample_column']),0));
    %  kk = randperm(length(temp_st));

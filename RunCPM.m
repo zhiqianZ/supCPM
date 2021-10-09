@@ -32,11 +32,11 @@ cancer_umap = readmatrix([path,'cancer_umap.csv'],'Range',[2 2]);
 cancer_label = readmatrix([path,'cancer_label.csv'],'Range',[2 3]);
 %% Synthetic
 %params: data,label,no_dims,compel_force,geodist,degree,ratio,k,change,niter,seed,factor
-synthetic_cpm = supCPM(synthetic_pca,synthetic_label,2,0,1,1,0,7,600,500,123,1);
-synthetic_supCPM_eu = supCPM(synthetic_pca,synthetic_label,2,0,0,2,0.5,7,1000,2000,123,1.3);
-synthetic_supCPM_geo = supCPM(synthetic_pca,synthetic_label,2,1,1,1,0.4,7,500,2000,123,1.3);
+synthetic_cpm = supCPM(synthetic_pca(:,1:20),synthetic_label,2,0,1,1,0,7,600,500,123,1);
+synthetic_supCPM_eu = supCPM(synthetic_pca(:,1:20),synthetic_label,2,1,0,1,0.5,7,500,2000,123,1.2);
+synthetic_supCPM_geo = supCPM(synthetic_pca(:,1:20),synthetic_label,2,1,1,1,0.5,7,500,2000,123,1.2);
 % run SupUMAP
-synthetic_supUMAP = run_umap([synthetic_pca,synthetic_label],...,
+synthetic_supUMAP = run_umap([synthetic_pca(:,1:20),synthetic_label],...,
                              'label_column','end','metric','cosine');
 % run SupPCA
 param.ktype_y = 'delta_cls';
@@ -115,7 +115,7 @@ metric_rnamix = [cv_geo,knc_geo,cpd_geo,fisher_geo,knn_geo;  cv_eu,knc_eu,cpd_eu
 %% PBMC3k
 %data,label,no_dims,compel_force,geodist,degree,ratio,k,change,niter,seed,factor
 pbmc_cpm = supCPM(pbmc_pca(:,1:30),pbmc_label,2,0,1,1,0,7,500,400,123,1);
-pbmc_supCPM_eu = supCPM(pbmc_pca(:,1:30),pbmc_label,2,1,0,2,0.7,7,500,3000,123,1.3);
+pbmc_supCPM_eu = supCPM(pbmc_pca(:,1:30),pbmc_label,2,1,0,2,0.8,7,500,3000,123,1.3);
 pbmc_supCPM_geo= supCPM(pbmc_pca(:,1:30),pbmc_label,2,1,1,1,0.6,7,500,3000,123,1.3);
 
 % run SupUMAP
