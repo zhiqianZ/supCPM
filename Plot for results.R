@@ -1,8 +1,8 @@
 ## Plot the result
 library(ggplot2)
 library(cowplot)
-output.dir = '.../supCPM-main/results/output/'
-figure.dir = '.../supCPM-main/results/figures/'
+output.dir = '.../supCPM-main/results/output/' # the location of output file
+figure.dir = '.../supCPM-main/results/figures/' # the location of figure file
 # color
 color.pbmc <- rgb(matrix(c(240,128,128, 178,34,34, 0,206,209,
                            50,205,50,   65,105,225,255,215,0, 

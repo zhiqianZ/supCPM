@@ -1,5 +1,5 @@
 dir = '.../supCPM-main'  # where files locate
-result.dir = '/results/output/'
+result.dir = '.../results/output/' # the location of results file
 library(Seurat)
 library(Matrix)
 library(tidyverse)
