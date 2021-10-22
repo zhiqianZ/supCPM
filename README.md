@@ -1,41 +1,45 @@
 supCPM:  supervised visualization method for scRNAseq data
 ---------------------------------------------------------------------------
 
-## Introduction
+### Introduction
 supCPM (supervised Capacity Preserving Mapping) provides a clustering guided visualization algorithm, which could result a more interpretable figure. 
 
 To find out the details of the supCPM, you could check out our preprint in BioRxiv,
 
-[Zhiqian Zhai, Yu L. Lei, Rongrong Wang, Yuying Xie, **Supervised Capacity Preserving Mapping: A Clustering Guided Visualization Method for scRNAseq data**.]
-(bioRxiv 2021.06.18.448900; doi: https://doi.org/10.1101/2021.06.18.448900)
+[Zhiqian Zhai, Yu L. Lei, Rongrong Wang, Yuying Xie, **Supervised Capacity Preserving Mapping: A Clustering Guided Visualization Method for scRNAseq data**. *BioRxiv 2021.06.18.448900*](https://doi.org/10.1101/2021.06.18.448900)
 
 ### Contents
-* [Contents of Files in the Respository] (#contents-of-files-in-the-respository)
+* [Contents of Files in the Respository](#contents-of-files-in-the-respository)
+* [R](#r)
+  * [Installation](#installation)
+  * [Functions](#functions)
+  * [Parameters](#parameters)
+  * [Quick Start](#quick-start)
+  * [Tuning Parameters](#tuning-parameters)
 
-* [R] (#r)
-**[Installation](#installation)
-**[Functions](#functions)
-**[Parameters](#parameters-1)
-**[Quick Start](#quick-start)
-**[Tuning Parameters](#tuning parameters)
-
-* [Matlab] (#matlab)
-** [Paramters] (#parameters)
-** [Example](#example)
-*** [Preprocess](#preprocess)
-*** [Run supCPM and CPM](#run-supcpm-and-cpm)
+* [MATLAB](#matlab)
+  * [Paramters](#parameters-1)
+  * [Example: RNAmix](#example-rnamix)
+    * [Preprocess](#preprocess)
+    * [Run supCPM and CPM](#run-supcpm-and-cpm)
 
 ### Contents of Files in the Respository
-**data**  Raw data we used in our paper.
-**MATLAB** Contains implementation and results of supCPM in MATLAB.
-**R** Contains implementaion of supCPM in R.
+**data**:  Raw data we used in our paper.
+
+**supCPM_MATLAB**: Contains implementation and results of supCPM in MATLAB.
+
+**supCPM**: Contains implementaion of supCPM in R.
+
+**supCPM figures**: Contains 1) main figures in our paper; 2) codes used in our paper including preprocess; running PCA, supCPM, t-SNE, UMAP; calculating merics and plotting figures.
+
+**readme figures**: Contains figures used in this readme file.
 
 ### R 
 #### Installation
-First, you could install supCPM directly from R with `devtools`:
+You could install supCPM directly from R with `devtools`:
 
     if (!suppressWarnings(require(devtools))) install.packages("devtools")
-    devtools::install_github("zhiqianZ/supCPM")
+    devtools::install_github("zhiqianZ/supCPM/supCPM")
 
 If it doesn't work, you could also download the `.tar.gz` file from our github and manually install the package.
 
@@ -53,7 +57,7 @@ All the parameters used in the function `supCPM` is listed and explained in deta
 
 `no_dims`: An integer suggest which dimensions the data needs to be projected into. Default value is 2.
 
-`comel_force**: 0 or 1 to declare whether to pull clusters a bit apart during the intrinsic dimensional estimation. Default is 1. 
+`comel_force`: 0 or 1 to declare whether to pull clusters a bit apart during the intrinsic dimensional estimation. Default is 1. 
 
 `dist`: A character to choose the distance measure in the high dimensions, 'Euclidean' or 'geodesic'. The parameter is **not case sensitive**. Default is 'Euclidean'. 
 
@@ -69,22 +73,25 @@ All the parameters used in the function `supCPM` is listed and explained in deta
 
 `factor`: A numeric to multiple on the capacity adjusted distance matrix to separate different clusters. Default is 1.3.
 
-`verbose`: Whether to ouput the objective funciton value every ten interations. Also, the scatterplot for the embedding points before switching of objective function will be shown if `verbose`=True. Default is True.
+`verbose`: Whether to ouput the objective funciton value every ten interations. Default is True.
 
 `init`: Whether to use MDS coordinates of capacity adjusted distance as initialization. Default is False.
 
-`epsilon`: The factor multiples on the default $\epsilon_0$ used in the high dimensional t-distribution to increase (>1) or decrease (<1) the original value. Default is 1.
+`epsilon`: The factor multiples on the default &epsilon<sub>0</sub> used in the high dimensional t-distribution to increase (>1) or decrease (<1) the original value. Default is 1.
 
 `lr`: Learning rate. Default is 500.
 
-`inter`: Whether to output intermediate result or not. Default is False. This could be used to tune the parameters as will be explained in the Tuning Parameters section.  
+`intermediate`: Whether to output intermediate result or not. Default is False. This could be used to tune the parameters as will be explained in the Tuning Parameters section.  
 
 #### Quick Start
-Say, if you have loaded a data matrix `RNAmix_pca`, storing the first a few PCs of RNAmix and a vector `RNAmix_label` in R. You can run supCPM with Euclidean distance and geodesic distance as follows:
+Say, if you have loaded a data matrix `RNAmix_pca`, storing the first 10 PCs of RNAmix (after perform normalization and scaling in Seurat) and a vector `RNAmix_label` (from SNN based clustering in Seurat) in R. You can run supCPM with Euclidean distance and geodesic distance as follows:
 
     library(supCPM)
     RNAmix_supCPM <- supCPM(RNAmix_pca,RNAmix_label,ratio=0.6)
     RNAmix_supCPM <- supCPM(RNAimx_pca,RNAmix_label,raito=0.6,dist='geodesic',degree=1)
+    
+Then, if we plot the result, we could get the figure similar like this using `ggplot2`
+<img src="/readme figures/supCPM_demo.png" width="100%" />
 
 #### Tuning parameters
 There are several parameters needs to be tuned in supCPM. But luckily, most of these parameters could be judged and chosen by looking at the visualization results. The details and examples could be found in the supplemnetary materials of our publication. Here, we simply discuss how to choose them.
@@ -93,45 +100,47 @@ There are several parameters needs to be tuned in supCPM. But luckily, most of t
 
 `factor`: The factor is to separate clusters in the high dimensions coarsely. By multiplying a factor on the capacity adjusted distance matrix, clusters are separated a little bit. Notice that 1) both `factor` and `ratio` are needed. `factor` operates overly, while there might still be a small fraction of cells resides in wrong clusters due to the noise of scRNA data. That is where `ratio` takes effect. Setting `factor` to be a large value would separate different clusters clearly. It seems `ratio` is not necessary. But increasing inter-cluster distances without limitation is a problem for not only supCPM, but UMAP and t-SNE as well. Extremely large distances will be converted into small probability with minor distinction. So the algorithms could fail to preserve the long distances. Thus, if we can't set `factor` to be large, then we need to refine cell positions individually by `ratio`. Emperically, `factor`= 1.3 is good enough.   
 
-`degree`: The degree of freedom in the t-distribution plays a role in preventing cluster shape from shrinking anisotrophically. KL-divergence, as a part of objective function, will impose different force in different direction based on the distribution of points. So when the algorithm try to shrink cluster, it will do anisotropically.  This will result in clusters with long shape. So what we need to do is to decrease the inter-cluster influence by increasing the probability. Set `degree` to 2 for Euclidean distance and to 1 for geodesic distance would be suitable for most cases. If you witness the result of plenty long shape clsuters, which doesn't happen before the switching of obejctive function, this suggests you to increase the parameter `degree`.
+`degree`: The degree of freedom in the t-distribution plays a role in preventing cluster shape from shrinking anisotrophically. KL-divergence, as a part of objective function, will impose different force in different direction based on the distribution of points. So when the algorithm try to shrink cluster, it will do anisotropically.  This will result in clusters with long shape. So what we need to do is to decrease the inter-cluster influence by increasing the probability. Set `degree` to 2 for Euclidean distance and to 1 for geodesic distance would be suitable for most cases. If you witness the result of plenty long shape clsuters, which doesn't happen before the switching of obejctive function, this suggests you to increase the parameter `degree`. The effect of degree of freedom can be seen in the following figures. This is a toy example, where three sepheres on a line are visualized in supCPM with different degree of freedom
+<img src="/readme figures/degree_demo.png" width="100%" />
 
-`epsilon`: The `epsilon` is used in the high dimensional t-distribution to prevent the inverse of zero. However, the magnitude of it could influence the structure of data overly. In short, if `epsilon` is too small, you will see the strange pattern that points on the boundary of cluster identically distributed on the circle. This tells you to increase `epsilon`. If `epsilon` is too large, you will see clusters in long shape before the switching of objective function, which is different from `degree` case. Then, you need to decrease `epsilon`. What's more, by setting `inter`=T, you could output both figure and matrix for the embedding cells before switching the objective function.
-
+`epsilon`: The `epsilon` is used in the high dimensional t-distribution to prevent the inverse of zero. However, the magnitude of it could influence the structure of data overly. In short, if `epsilon` is too small, you will see the strange pattern that points on the boundary of cluster identically distributed on the circle. This tells you to increase `epsilon`. If `epsilon` is too large, you will see clusters in long shape before the switching of objective function, which is different from `degree` case. Then, you need to decrease `epsilon`. What's more, by setting `inter`=T, you could output both figure and matrix for the embedding cells before switching the objective function. The effect of `epsilon` is shown below. The first four figures are Cancer Cell line dataset used in our paper with different value of epsilon. Next four figures are the intermediate results where supCPM only runs for first phase before swicthing the objective function (with just KL-divergence) .
+<img src="/readme figures/epsilon_demo1.png" width="100%" />
+<img src="/readme figures/epsilon_demo2.png" width="100%" />
 
 ###  MATLAB
-We introduce the basic idea of tuning the parameter and use an example in our paper, RNAmix, to illustrate how to use supCPM. 
+We have introduced the basic idea of tuning the parameters in the previous chapter and here we just simply summarize the parameters in MATLAB version which are slight different parameters. Then, use an example in our paper, RNAmix, to illustrate how to use supCPM. 
 #### Parameters
-**data**: a matrix of the input n*p dataset, where n is the cell number and p is the number of genes.
+`data`: a matrix of the input n*p dataset, where n is the cell number and p is the number of genes.
 
-**label**: a vector indicates the label for each cell. 
+`label`: a vector indicates the label for each cell. 
 
-**no_dims**: a scalar of the embedding dimensions. For visualization purpose, we choose 2 or 3. 
+`no_dims`: a scalar of the embedding dimensions. For visualization purpose, we choose 2 or 3. 
 
-**compel_force**:  takes the value 0 or 1.  compel_force=1 if user wants to pull clusters a bit apart; compel_force =0 if user wants the best preservation of the geometry.
+`compel_force`:  takes the value 0 or 1.  compel_force=1 if user wants to pull clusters a bit apart; compel_force =0 if user wants the best preservation of the geometry.
 
-**geodist**: takes the value 0 or 1. 0 means the user wants to use Euclidean distance in the high diemensions, and 1 means the users wants to choose geodesic distance.  
+`geodist`: takes the value 0 or 1. 0 means the user wants to use Euclidean distance in the high diemensions, and 1 means the users wants to choose geodesic distance.  
 According to our experience,  we recomend to choose the Euclidean distance for clean data (less noisy) and choose geodesic distance for the noisy one.    
 
-**degree**: a scalar to choose the degree of freedom of high dimensions t-distribution. Normally, the value is set to be 1 if geodesic distance is chosen and 
+`degree`: a scalar to choose the degree of freedom of high dimensions t-distribution. Normally, the value is set to be 1 if geodesic distance is chosen and 
 is set to 2 if Euclidean distance is used. Due to the supervised part of supCPM, 
 the cluster's shape tends to shrink. This parameter could in some degree prevents the cluster from streching into a long shape. 
 
-**ratio**: takes the value from 0 to 1. A larger value means higher proportion of the supervised term. 
+`ratio`: takes the value from 0 to 1. A larger value means higher proportion of the supervised term. 
 
-**k**: choose the size of knn neighbors used in geodesic distance. This parameter will not influence the results of supCPM with Euclidean distance.  The default value is set to 7.
+`k`: choose the size of knn neighbors used in geodesic distance. This parameter will not influence the results of supCPM with Euclidean distance.  The default value is set to 7.
 
-**change**: the number of iteration for CPM part. 
+`change`: the number of iteration for CPM part. 
 
-**niter**: total number of iteration.  (If niter < change, there will be no supervision.)
+`niter`: total number of iteration.  (If niter < change, there will be no supervision.)
 
-**seed**: the random seed for reproduction. 
+`seed`: the random seed for reproduction. 
 
-**factor**: the constant multiplies on the high dimensional iter-cluster distances. This parameter takes the value >1. However, it should not be too large, 
+`factor`: the constant multiplies on the high dimensional iter-cluster distances. This parameter takes the value >1. However, it should not be too large, 
 otherwise the geometry structure will be distorted. In all the four datasets, set it to 1.3 will be enough.  
 
-### Example RNAmix
+### Example: RNAmix
 #### Preprocess
-We use the workflow of Seurat (v4.0.1) on the RNAmix dataset including procedures like normalization, scaling, PCA, clustering and visualization. We follow the standard procedures of 
+We use the workflow of Seurat on the RNAmix dataset including procedures like normalization, scaling, PCA, clustering and visualization. We follow the standard procedures of 
 Seurat, which could also be found in their toutrial of PBMC3k <https://satijalab.org/seurat/articles/pbmc3k_tutorial.html>.
 ```r
 library(Seurat)
@@ -158,10 +167,9 @@ RNAmix.seurat <- RunTSNE(RNAmix.seurat, dims = 1:10)
 # the code 'RNAmix.seurat <- RunSeurat(rnamix.data, npcs = 10, norm='log', resolution = 1, nfeature=2000)' yeilds the same results.
 ```
 
-#### supCPM and CPM
-With the labels from SNN based clustering in Seurat and first 10 PCs, we are ready to run the code of supCPM and CPM.  The settings for other visualization methods used in our paper could be found 
-in the file 'RunCPM.m' in detail. We use supUMAP from <https://www.mathworks.com/matlabcentral/fileexchange/71902-uniform-manifold-approximation-and-projection-umap> 
-and supPCA from Prof. Ali Ghodsi. 
+#### Run supCPM and CPM
+With the labels from SNN based clustering in Seurat and first 10 PCs, we are ready to run the code of supCPM and CPM. The settings for other visualization methods used in our paper could be found in the file 'RunCPM.m' in detail. We use supUMAP from <https://www.mathworks.com/matlabcentral/fileexchange/71902-uniform-manifold-approximation-and-projection-umap> 
+and supPCA codes from Prof. Ali Ghodsi. 
 
 Run the CPM (niter > change, factor=1 and degree =1)
 ``` 
