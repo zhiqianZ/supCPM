@@ -53,7 +53,7 @@ All the parameters used in the function `supCPM` is listed and explained in deta
 
 `label`: A label vector indicating which cluster the cell belongs to. The vector could be numeric with cluster ID or with characters identifying names of cell types. 
 
-`ratio`: A numeric value in the objective function balancing off the geometric and label information.
+`ratio`: A numeric value in the objective function balancing off the geometric and label information. Default is 0.7.
 
 `no_dims`: An integer suggest which dimensions the data needs to be projected into. Default value is 2.
 
@@ -90,8 +90,9 @@ Say, if you have loaded a data matrix `RNAmix_pca`, storing the first 10 PCs of 
     RNAmix_supCPM <- supCPM(RNAmix_pca,RNAmix_label,ratio=0.6)
     RNAmix_supCPM <- supCPM(RNAimx_pca,RNAmix_label,raito=0.6,dist='geodesic',degree=1)
     
-Then, if we plot the result, we could get the figure similar like this using `ggplot2`
-<img src="/readme figures/supCPM_demo.png" width="100%" />
+Then, if we plot the result, we could get the figure similar like this using `ggplot2`.
+
+<img src="/readme figures/supCPM_demo.PNG" width="70%" />
 
 #### Tuning parameters
 There are several parameters needs to be tuned in supCPM. But luckily, most of these parameters could be judged and chosen by looking at the visualization results. The details and examples could be found in the supplemnetary materials of our publication. Here, we simply discuss how to choose them.
@@ -100,11 +101,11 @@ There are several parameters needs to be tuned in supCPM. But luckily, most of t
 
 `factor`: The factor is to separate clusters in the high dimensions coarsely. By multiplying a factor on the capacity adjusted distance matrix, clusters are separated a little bit. Notice that 1) both `factor` and `ratio` are needed. `factor` operates overly, while there might still be a small fraction of cells resides in wrong clusters due to the noise of scRNA data. That is where `ratio` takes effect. Setting `factor` to be a large value would separate different clusters clearly. It seems `ratio` is not necessary. But increasing inter-cluster distances without limitation is a problem for not only supCPM, but UMAP and t-SNE as well. Extremely large distances will be converted into small probability with minor distinction. So the algorithms could fail to preserve the long distances. Thus, if we can't set `factor` to be large, then we need to refine cell positions individually by `ratio`. Emperically, `factor`= 1.3 is good enough.   
 
-`degree`: The degree of freedom in the t-distribution plays a role in preventing cluster shape from shrinking anisotrophically. KL-divergence, as a part of objective function, will impose different force in different direction based on the distribution of points. So when the algorithm try to shrink cluster, it will do anisotropically.  This will result in clusters with long shape. So what we need to do is to decrease the inter-cluster influence by increasing the probability. Set `degree` to 2 for Euclidean distance and to 1 for geodesic distance would be suitable for most cases. If you witness the result of plenty long shape clsuters, which doesn't happen before the switching of obejctive function, this suggests you to increase the parameter `degree`. The effect of degree of freedom can be seen in the following figures. This is a toy example, where three sepheres on a line are visualized in supCPM with different degree of freedom
-<img src="/readme figures/degree_demo.png" width="100%" />
+`degree`: The degree of freedom in the t-distribution plays a role in preventing cluster shape from shrinking anisotrophically. KL-divergence, as a part of objective function, will impose different force in different direction based on the distribution of points. So when the algorithm try to shrink cluster, it will do anisotropically.  This will result in clusters with long shape. So what we need to do is to decrease the inter-cluster influence by increasing the probability. Set `degree` to 2 for Euclidean distance and to 1 for geodesic distance would be suitable for most cases. If you witness the result of plenty long shape clsuters, which doesn't happen before the switching of obejctive function, this suggests you to increase the parameter `degree`. The effect of degree of freedom can be seen in the following figures. This is a toy example, where three sepheres on a line are visualized in supCPM with different degree of freedom.
+<img src="/readme figures/degree_demo.PNG" width="100%" />
 
 `epsilon`: The `epsilon` is used in the high dimensional t-distribution to prevent the inverse of zero. However, the magnitude of it could influence the structure of data overly. In short, if `epsilon` is too small, you will see the strange pattern that points on the boundary of cluster identically distributed on the circle. This tells you to increase `epsilon`. If `epsilon` is too large, you will see clusters in long shape before the switching of objective function, which is different from `degree` case. Then, you need to decrease `epsilon`. What's more, by setting `inter`=T, you could output both figure and matrix for the embedding cells before switching the objective function. The effect of `epsilon` is shown below. The first four figures are Cancer Cell line dataset used in our paper with different value of epsilon. Next four figures are the intermediate results where supCPM only runs for first phase before swicthing the objective function (with just KL-divergence) .
-<img src="/readme figures/epsilon_demo1.png" width="100%" />
+<img src="/readme figures/epsilon_demo1.PNG" width="100%" />
 <img src="/readme figures/epsilon_demo2.png" width="100%" />
 
 ###  MATLAB
