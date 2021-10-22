@@ -39,9 +39,9 @@ To find out the details of the supCPM, you could check out our preprint in BioRx
 You could install supCPM directly from R with `devtools`:
 
     if (!suppressWarnings(require(devtools))) install.packages("devtools")
-    devtools::install_github("zhiqianZ/supCPM/supCPM")
+    devtools::install_github("zhiqianZ/supCPM/supCPM", depedencies=T)
 
-If it doesn't work, you could also download the `.tar.gz` file from our github and manually install the package.
+If it doesn't work, you could also download the `.tar.gz` file from our github and manually install the package. In this way you may need to install the dependent packages manually as well (igraph, pracma, DescTools).
 
 #### Functions
 Our package `supCPM` contains three main functions. The first is `supCPM`, which is the implementation of our algorithm. The second is `VisualMetric`, which contains five comparison metics used in our article. The third is `supCPM_downsample`. This function is to deal with the large sample dataset, which is more and more prevelent in scRNA, and it is still under development. Also, from the workflow of supCPM, it is easy to see that if we set some part of the parameters in supCPM, supCPM could result in CPM. (`degree`=1, `ratio`=any value, `niter2`=0, `factor`=1)
