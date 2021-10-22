@@ -7,7 +7,7 @@
 #'
 #' @param data matrix; Input data matrix with rows representing cells and columns representing genes.
 #' @param label vector; The label vector indicating which cluster that each cell belongs to.
-#' @param ratio numeric between 0 and 1; This is a trade-off between the KL-divergence and trace ratio term.
+#' @param ratio numeric between 0 and 1; This is a trade-off between the KL-divergence and trace ratio term. Default is 0.7.
 #' @param no_dims integer; The dimensionality of the embedding space (default is 2).
 #' @param compel_force 0 or 1; Compel_force equals to 0 if user wants to pull clusters a bit apart, and equals to 1 if user wants the best preservation of the geometry (default is 0).
 #' @param dist 'euclidean' or 'geodesic'; Choice of the distance used in the high dimensions (default is 'euclidean').
@@ -27,7 +27,7 @@
 #' @references Zhiqian Zhai, Yu L. Lei, Rongrong Wang, Yuying Xie, Supervised Capacity Preserving Mapping: A Clustering Guided Visualization Method for scRNAseq data,
 #' bioRxiv 2021.06.18.448900; doi: https://doi.org/10.1101/2021.06.18.448900
 #' @export
-supCPM <- function(data,label,ratio,no_dims=2,compel_force=1,dist='euclidean',degree=2,k=7,niter1=500,niter2=700,seed=40,factor=1.3,verbose=T,init=T,epsilon=1,lr=500,intermediate=F){
+supCPM <- function(data,label,ratio=0.7,no_dims=2,compel_force=1,dist='euclidean',degree=2,k=7,niter1=500,niter2=700,seed=40,factor=1.3,verbose=T,init=T,epsilon=1,lr=500,intermediate=F){
   if(any(is.na(data))){stop('Data contains NAs!')}
   data = as.matrix(data)
   if(any(is.na(data))){stop('Data contains NAs by coercion!')}

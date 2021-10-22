@@ -7,7 +7,7 @@
 supCPM(
   data,
   label,
-  ratio,
+  ratio = 0.7,
   no_dims = 2,
   compel_force = 1,
   dist = "euclidean",
@@ -29,7 +29,7 @@ supCPM(
 
 \item{label}{vector; The label vector indicating which cluster that each cell belongs to.}
 
-\item{ratio}{numeric between 0 and 1; This is a trade-off between the KL-divergence and trace ratio term.}
+\item{ratio}{numeric between 0 and 1; This is a trade-off between the KL-divergence and trace ratio term. Default is 0.7.}
 
 \item{no_dims}{integer; The dimensionality of the embedding space (default is 2).}
 
