@@ -27,6 +27,9 @@
 #' @references Zhiqian Zhai, Yu L. Lei, Rongrong Wang, Yuying Xie, Supervised Capacity Preserving Mapping: A Clustering Guided Visualization Method for scRNAseq data,
 #' bioRxiv 2021.06.18.448900; doi: https://doi.org/10.1101/2021.06.18.448900
 #' @export
+#' @import igraph
+#' @importFrom DescTools Small
+#' @import pracma
 supCPM <- function(data,label,ratio=0.7,no_dims=2,compel_force=1,dist='euclidean',degree=2,k=7,niter1=500,niter2=700,seed=40,factor=1.3,verbose=T,init=T,epsilon=1,lr=500,intermediate=F){
   if(any(is.na(data))){stop('Data contains NAs!')}
   data = as.matrix(data)
@@ -66,7 +69,6 @@ supCPM <- function(data,label,ratio=0.7,no_dims=2,compel_force=1,dist='euclidean
   if(is.character(label[1])){
     label = as.numeric(as.factor(label))
     if(any(is.na(label))){stop('labels contain NAs by coercion!')}}
-
 
   # sorting labels
   if(min(label)==0){label=label+1}
