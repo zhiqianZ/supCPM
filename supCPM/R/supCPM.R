@@ -23,7 +23,7 @@
 #' @param epsilon numeric; The multiple of the default epsilon, which is used in converting distance to probability; Default value is 1.
 #' @param lr numeric; The learning rate for optimization. Default value is 500.
 #' @param intermediate logic; Whether to output coordinates of the embedding points before switching objective function or not. Default is False.
-#' @return If inter=False, returns an matrix containing supCPM coordinates in the embedding dimenisons. If inter=True, return a list with the final embedding and the intermediate embedding points.
+#' @return If intermediate=False, returns an matrix containing supCPM coordinates in the embedding dimenisons. If intermediate=True, return a list with the final embedding and the intermediate embedding points.
 #' @references Zhiqian Zhai, Yu L. Lei, Rongrong Wang, Yuying Xie, Supervised Capacity Preserving Mapping: A Clustering Guided Visualization Method for scRNAseq data,
 #' bioRxiv 2021.06.18.448900; doi: https://doi.org/10.1101/2021.06.18.448900
 #' @export

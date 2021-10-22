@@ -1,11 +1,10 @@
 Package: supCPM
 Type: Package
-Title: What the Package Does (Title Case)
+Title: Supervised Capacity Preserving Mapping
 Version: 0.1.0
-Author: Who wrote it
-Maintainer: The package maintainer <yourself@somewhere.net>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
+Author: Zhiqian Zhai
+Maintainer: Zhiqian Zhai <zhqzhai@g.ucla.edu>
+Description: supCPM is a supervised visualizaiton method for scRNA data, which could preserve more geometry structure as well as separating different clusters. 
 License: What license is it under?
 Encoding: UTF-8
 LazyData: true

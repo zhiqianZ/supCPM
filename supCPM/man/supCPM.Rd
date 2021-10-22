@@ -61,7 +61,7 @@ then the initialization will be the MDS of the adjusted capacity distance matrix
 \item{intermediate}{logic; Whether to output coordinates of the embedding points before switching objective function or not. Default is False.}
 }
 \value{
-If inter=False, returns an matrix containing supCPM coordinates in the embedding dimenisons. If inter=True, return a list with the final embedding and the intermediate embedding points.
+If intermediate=False, returns an matrix containing supCPM coordinates in the embedding dimenisons. If intermediate=True, return a list with the final embedding and the intermediate embedding points.
 }
 \description{
 Run supCPM visualization on the data matrix. supCPM is a clustering guided visualization method designed for single-cell RNA data.
