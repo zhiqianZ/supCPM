@@ -6,7 +6,7 @@ Author: Zhiqian Zhai
 Maintainer: Zhiqian Zhai <zhqzhai@g.ucla.edu>
 Imports: igraph(>= 1.2.6), pracma(>= 2.3.3), DescTools(>= 0.99.43)
 Description: supCPM is a supervised visualizaiton method for scRNA data, which could preserve more geometry structure as well as separating different clusters. 
-License: What license is it under?
+License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.1.2

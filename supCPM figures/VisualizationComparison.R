@@ -255,7 +255,6 @@ rnamix.label <- as.numeric(rnamix@active.ident)
 rnamix.pca       <- rnamix@reductions$pca@cell.embeddings
 rnamix.umap      <- rnamix@reductions$umap@cell.embeddings
 rnamix.tsne      <- rnamix@reductions$tsne@cell.embeddings
-rnamix.sumap     <- umap(rnamix.pca[,1:10],y=rnamix.label,metric='cosine')
 rnamix.cpm       <- supCPM(rnamix.pca[,1:10],rnamix.label,dist='geodesic',degree=1,factor=1,niter2=0,init=F)
 rnamix.supcpm_euclidean   <- supCPM(rnamix.pca[,1:10],rnamix.label,niter2=600,ratio=0.8,init=T)
 rnamix.supcpm_geodesic  <- supCPM(rnamix.pca[,1:10],rnamix.label,ratio=0.7,dist='geodesic',degree=1,init=T)
