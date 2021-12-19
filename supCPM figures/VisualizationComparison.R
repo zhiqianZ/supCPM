@@ -493,16 +493,21 @@ for (i in 2:9){
 }
 
 ##
-metric.data.frame[metric.data.frame$dataset=='CovidT',1]='COVID'
+metric.data.frame <- read.csv("C:/SupCPM/Metric.csv")
+metric.data.frame <- metric.data.frame[,-1]
+metric.data.frame[metric.data.frame$dataset=='NKT',1]='CovidT'
 metric.data.frame.part <- metric.data.frame %>% filter(method!='supPCA'&method!='PCA')
-
+metric.data.frame.part$dataset <- factor(metric.data.frame.part$dataset,levels=c("Synthetic","RNAmix","Cancer","PBMC","CovidT"))
+levels(metric.data.frame.part$dataset) <- c("Synthetic","RNAmix","Cancer","PBMC","CovidT")
 metric.data.frame.part[metric.data.frame.part$metric=='CS','Scores'] =  -0.5*log(metric.data.frame.part[metric.data.frame.part$metric=='CS','Scores'])
 metric.data.frame.part[metric.data.frame.part$metric=='CS','metric'] = '-0.5log(CSM)'
 metric.plot <- ggplot(metric.data.frame.part,aes(x=dataset,y=Scores,fill=method))+
   geom_bar(position = 'dodge',stat='identity')+
   facet_wrap(~metric)+
-  theme(strip.text.x = element_text(size=16,face = "bold.italic"),axis.title.x = element_blank(),axis.text.x = element_text(size=13),axis.title.y = element_text(size=13))+
-  scale_fill_brewer(palette="Set2")
+  theme(strip.text.x = element_text(size=16,face = "bold.italic"),axis.title.x = element_blank(),axis.text.x = element_text(size=15),axis.title.y = element_text(size=13))+
+  scale_fill_brewer(palette="Set2")+theme(legend.key.size = unit(1.5, 'cm'))+
+  theme(legend.title = element_text(size=20))+
+  theme(legend.text = element_text(size=18))
 
 
 ## save the plots
