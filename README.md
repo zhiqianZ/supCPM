@@ -1,4 +1,4 @@
-upCPM:  supervised visualization method for scRNAseq data
+SupCPM:  supervised visualization method for scRNAseq data
 ---------------------------------------------------------------------------
 
 ### Introduction
