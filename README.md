@@ -81,7 +81,7 @@ All the parameters used in the function `supCPM` is listed and explained in deta
 
 `lr`: Learning rate. Default is 500.
 
-`intermediate`: Whether to output intermediate result or not. Default is False. This could be used to tune the parameters as will be explained in the Tuning Parameters section.  
+`intermediate`: Whether to output intermediate result or not. Default is False.
 
 #### Quick Start
 Say, if you have loaded a data matrix `RNAmix_pca`, storing the first 10 PCs of RNAmix (after perform normalization and scaling in Seurat) and a vector `RNAmix_label` (from SNN based clustering in Seurat) in R. You can run supCPM with Euclidean distance and geodesic distance as follows:
