@@ -31,11 +31,69 @@ cancer_scale = cancer_scale';
 cancer_tsne = readmatrix([path,'cancer_tsne.csv'],'Range',[2 2]);
 cancer_umap = readmatrix([path,'cancer_umap.csv'],'Range',[2 2]);
 cancer_label = readmatrix([path,'cancer_label.csv'],'Range',[2 3]);
-path = 'C:/SupCPM/output/';
+
 covid_pca = readmatrix([path,'COVID_pca.csv'],'Range',[2 2]);
 covid_label = readmatrix([path,'COVID_label.csv'],'Range',[2 3]);
 covid_scale = readmatrix([path,'COVID_scale.csv'],'Range',[2 2]);
 covid_scale = covid_scale';
+
+eb_pca = readmatrix([path,'EB_pca.csv'],'Range',[2 2]);
+eb_label = readmatrix([path,'EB_label.csv'],'Range',[2 2]);
+eb_scale = readmatrix([path,'EB_scale.csv'],'Range',[2 2]);
+eb_scale = eb_scale';
+
+nkt_pca = readmatrix([path,'CovidT_pca.csv'],'Range',[2 2]);
+nkt_label = readmatrix([path,'CovidT_label.csv'],'Range',[2 2]);
+nkt_scale = readmatrix([path,'CovidT_scale.csv'],'Range',[2 2]);
+nkt_scale = nkt_scale';
+%% EB
+% run SupUMAP
+eb_supUMAP = run_umap([eb_pca(:,1:20),eb_label],...,
+                             'label_column','end','metric','cosine');
+% run SupPCA
+param.ktype_y = 'delta_cls';
+param.kparam_y = 1;
+eb_supPCA = SPCA(eb_scale',eb_label',2,param);
+eb_supPCA = eb_supPCA';
+% MDS
+X = eb_pca(:,1:20);
+label = eb_label;
+covar = zeros(1,length(unique(label)));
+k = 1;
+for i = unique(label)'
+    cl = find(label==i);
+    covar(k) = trace(cov(X(cl,:)));
+    k = k+1;
+end
+[eb_MDS,knc_mds,cpd_mds] = mds_quality(X,label,3);
+eb_MDS = [eb_MDS,covar'];
+writematrix(eb_supUMAP,[path,'EB_supUMAP.csv']);
+writematrix(eb_supPCA,[path,'EB_supPCA.csv']);
+writematrix(eb_MDS,[path,'EB_MDS.csv']);
+%% NKT
+% run SupUMAP
+nkt_supUMAP = run_umap([nkt_pca(:,1:30),nkt_label],...,
+                             'label_column','end','metric','cosine');
+% run SupPCA
+param.ktype_y = 'delta_cls';
+param.kparam_y = 1;
+nkt_supPCA = SPCA(nkt_scale',nkt_label',2,param);
+nkt_supPCA = nkt_supPCA';
+% MDS
+X = nkt_pca(:,1:30);
+label = nkt_label;
+covar = zeros(1,length(unique(label)));
+k = 1;
+for i = unique(label)'
+    cl = find(label==i);
+    covar(k) = trace(cov(X(cl,:)));
+    k = k+1;
+end
+[nkt_MDS,knc_mds,cpd_mds] = mds_quality(X,label,3);
+nkt_MDS = [nkt_MDS,covar'];
+writematrix(nkt_supUMAP,[path,'NKT_supUMAP.csv']);
+writematrix(nkt_supPCA,[path,'NKT_supPCA.csv']);
+writematrix(nkt_MDS,[path,'NKT_MDS.csv']);
 %% COVID
 % run SupUMAP
 covid_supUMAP = run_umap([covid_pca(:,1:40),covid_label],...,

@@ -319,7 +319,7 @@ for (i in 2:9){
 
 
 ##################### Cancer #######################
-cancer_data <- load_mixseq_data("C:/SupCPM/data/rna/DMSO_24hr_expt1","cancer")
+cancer_data <- load_mixseq_data(paste0(dir,"/SupCPM/data/rna/DMSO_24hr_expt1"),"cancer")
 # filter cells
 cancer_meta <- cancer_data@meta.data
 cell_quality <- cancer_meta['cell_quality']
@@ -417,111 +417,85 @@ for (i in 2:9){
 }
 
 ####################### COVID #######################
-path = paste0(dir,"data/COVID/GSM4339769_C141_filtered_feature_bc_matrix.h5")
-X = Read10X_h5(path, use.names = TRUE, unique.features = TRUE)
-filtering = function(data){
-  data.s = CreateSeuratObject(data,min.cells = 3, min.features = 200)
-  data.s[["percent.mt"]] <- PercentageFeatureSet(data.s, pattern = "^MT-")
-  data.s <- subset(data.s, subset = nFeature_RNA > 200 & nFeature_RNA < 6000 & percent.mt < 10 & nCount_RNA > 1000)
-  cat(dim(data.s))
-  return(data.s)
-}
-covid = filtering(X)
-# label from paper
-meta.all <- read.table(paste0(dir,"data/COVID/all.cell.annotation.meta.txt"),header=T)
-ID <- meta.all[,1]
-ID <- gsub('_','-',ID)
-coln <- colnames(covid)
-coln <- gsub('1','5',coln)
-label <- meta.all[ID%in%coln,8]
-names(label) <- gsub('_5','-1',meta.all[ID%in%coln,1])
-covid <- covid[,coln%in%ID]
-id <- which(label%in%c('Mast','Neutrophil'))
-label <- label[-id]
-covid <- covid[,-id]
-# run sctransform
-covid <- SCTransform(covid, vars.to.regress = "percent.mt", verbose = FALSE)
-covid <- FindVariableFeatures(covid, selection.method = "vst", nfeatures = 2000)
-covid <- RunPCA(covid, verbose = FALSE)
-covid <- RunUMAP(covid, dims = 1:40, verbose = FALSE)
-covid <- RunTSNE(covid, dims = 1:40, verbose = FALSE)
+meta.t <- read.table(paste0(dir,"/COVID/NKT.cell.annotation.meta.txt"),header=T,sep=';')
+nCoV <- readRDS(paste0(dir,"/COVID/nCoV.rds"))
+meta.t <- meta.t[-which(meta.t$celltype=='Doublets'|meta.t$celltype=='Uncertain'),]
+label.t <- meta.t$celltype
+NKT.label <- as.numeric(as.factor(label.t))
+id <- which(colnames(nCoV)%in%meta.t$ID)
+CovidT <- nCoV[,id]
+CovidT <- RunPCA(CovidT,verbose = F)
+CovidT <- RunTSNE(CovidT,dims=1:30)
+CovidT <- RunUMAP(CovidT,dims=1:30)
+CovidT.pca  <- CovidT@reductions$pca@cell.embeddings
+CovidT.tsne <- CovidT@reductions$tsne@cell.embeddings
+CovidT.umap <- CovidT@reductions$umap@cell.embeddings
+CovidT.euclidean <- supCPM(CovidT.pca[,1:30],NKT.label,dist='euclidean',niter1=300,niter2=900,seed=40,ratio=0.85,factor=1.3,degree=3,init=F)
+CovidT.geodesic <- supCPM(CovidT.pca[,1:30],NKT.label,dist='geodesic',niter1=300,niter2=900,seed=40,ratio=0.85,degree=2,init=F)
+CovidT.supumap <- read.csv(paste0(result.dir,'CovidT_supUMAP.csv'),header=F)
+CovidT.suppca <- read.csv(paste0(result.dir,'CovidT_supPCA.csv'),header=F)
+CovidT.mds <- read.csv(paste0(result.dir,'CovidT_MDS.csv'),header=F)
 
-
-
-
-# Run results
-covid.label     <- data.frame(as.factor(label),as.numeric(as.factor(label)))
-covid.pca       <- covid@reductions$pca@cell.embeddings
-covid.umap      <- covid@reductions$umap@cell.embeddings
-covid.tsne      <- covid@reductions$tsne@cell.embeddings
-covid.cpm       <- supCPM(covid.pca[,1:40],covid.label[,2],factor=1,niter2=0,init=F)
-covid.supcpm_euclidean   <- supCPM(covid.pca[,1:40],covid.label[,2],ratio=0.5,init=F,niter1=400,niter2=800)
-covid.supcpm_geodesic  <- supCPM(covid.pca[,1:40],covid.label[,2],ratio=0.8,
-                                 dist='geodesic',degree=2,init=F,niter1=400,niter2=900,k=60)
-covid.supumap <- read.csv(paste0(result.dir,'COVID_supUMAP.csv'),header=F)
-covid.mds <- read.csv(paste0(result.dir,'COVID_MDS.csv'),header=F)
-covid.suppca <- read.csv(paste0(result.dir,'COVID_supPCA.csv'),header=F)
-
-
-## metrics
 for(i in 2:9){
-  metric = eval(str2lang(paste0("covid.",tolower(plot.title[i]))))%>%VisualMetric(covid.pca[,1:40],covid.label[,2],2,10)
+  metric = eval(str2lang(paste0("CovidT.",tolower(plot.title[i]))))%>%VisualMetric(nT.pca[,1:30],NKT.label,3,10)
   for(j in 1:5){
-    metric.data.frame[k,1:3] = c('COVID',plot.title[[i]],names(metric)[[j]])
+    metric.data.frame[k,1:3] = c('CovidT',plot.title[[i]],names(metric)[[j]])
     metric.data.frame[k,4] = metric[[j]]
     k<-k+1
   }
 }
 
-## Plot
-color.covid <- rgb(matrix(c(240,128,128, 0,206,209, 255,215,0, 50,205,50,
-                            147,112,219, 105,105,105, 255,69, 0,159,71,36),ncol=3,byrow = T), maxColorValue = 255)
 
-covid.result <- list()
+CovidT.celltype <- c("Tfh","Tim3-CD8+IFN-gamma(low) T-cells","Th17","gamma-delta T-cells",
+                  "Tim3+CD8+IFN-gamma(high) T-cells","T reg")
+CovidT.color <- rgb(matrix(c(223,111,103,230,143,22,50,147,255,
+                          70,200,98,150,161,48,0,171,190),ncol=3,byrow = T),maxColorValue = 255)
+CovidT.result <- list()
 for(i in 1:9){
-  result <- eval(str2lang(paste0("covid.",tolower(plot.title[i]))))
+  result <- eval(str2lang(paste0("CovidT.",tolower(plot.title[i]))))
   colnames(result) <- paste0('V',1:ncol(result))
-  covid.result[[i]] <- as.data.frame(result)
+  CovidT.result[[i]] <- as.data.frame(result)
 }
 
-covid.celltype <- c('B','Epithelial','Macrophages','mDC','NK','pDC','Plasma','T')
-# Plot for covid
-covid.plot <- list()
-len <- max(abs(diff(range(covid.result[[1]]$V1))),abs(diff(range(covid.result[[1]]$V2))))
-midx <- sum(range(covid.result[[1]]$V1))/2
-midy <- sum(range(covid.result[[1]]$V2))/2
+CovidT.plot <- list()
+len <- max(abs(diff(range(CovidT.result[[1]]$V1))),abs(diff(range(CovidT.result[[1]]$V2))))
+midx <- sum(range(CovidT.result[[1]]$V1))/2
+midy <- sum(range(CovidT.result[[1]]$V2))/2
 x <- c(midx-len/2,midx+len/2)
 y <- c(midy-len/2,midy+len/2)
-covid.plot[[1]] <- ggplot(data.frame(covid.result[[1]]),aes(x=V1,y=V2,size=V3,color=covid.celltype))+geom_point()+
+CovidT.plot[[1]] <- ggplot(data.frame(CovidT.result[[1]]))+
+  geom_point(aes(x=V1,y=V2,size=V3,color=CovidT.celltype))+
   ggtitle(plot.title[1])+
   theme(panel.grid.major=element_blank(),panel.grid.minor=element_blank(),panel.background=element_blank(),axis.line=element_line(colour='black'))+
   xlab(paste(plot.title[1],1))+ylab(paste(plot.title[1],2))+
   scale_x_continuous(labels = NULL)+scale_y_continuous(labels = NULL)+
   theme(plot.title = element_text(hjust = 0.5,size=20))+labs(color ="Celltypes")+
-  scale_colour_manual(values=color.covid)+
-  theme(legend.position = c(0.2, 0.25),legend.key.size = unit(13,'pt'))+guides(size="none")+
+  scale_color_manual(values=CovidT.color)+
+  theme(legend.position = c(0.51, 0.15),legend.key.size = unit(15,'pt'),
+        legend.title = element_text(size=11))+
+  guides(size=FALSE,color=guide_legend(ncol=2))+
   coord_equal(xlim=x,ylim=y)
+CovidT.plot[[1]]
 for (i in 2:9){
-  len <- max(abs(diff(range(covid.result[[i]]$V1))),abs(diff(range(covid.result[[i]]$V2))))
-  midx <- sum(range(covid.result[[i]]$V1))/2
-  midy <- sum(range(covid.result[[i]]$V2))/2
+  len <- max(abs(diff(range(CovidT.result[[i]]$V1))),abs(diff(range(CovidT.result[[i]]$V2))))
+  midx <- sum(range(CovidT.result[[i]]$V1))/2
+  midy <- sum(range(CovidT.result[[i]]$V2))/2
   x <- c(midx-len/2,midx+len/2)
   y <- c(midy-len/2,midy+len/2)
-  covid.plot[[i]] <- ggplot(data.frame(covid.result[[i]]),aes(x=V1,y=V2))+
-    geom_point(color=color.covid[covid.label[,2]],size=0.7)+
+  CovidT.plot[[i]] <- ggplot(data.frame(CovidT.result[[i]]),aes(x=V1,y=V2))+
+    geom_point(color=CovidT.color[CovidT.label],size=0.5)+
     ggtitle(plot.title[i])+
     theme(panel.grid.major=element_blank(),panel.grid.minor=element_blank(),panel.background=element_blank(),axis.line=element_line(colour='black'))+
     xlab(paste(plot.title[i],1))+ylab(paste(plot.title[i],2))+
     scale_x_continuous(labels = NULL)+scale_y_continuous(labels = NULL)+
     theme(plot.title = element_text(hjust = 0.5,size=20))+
-    coord_equal(xlim=x,ylim=y)
+    coord_equal(xlim=x,ylim=y)+theme(legend.position="none")
 }
 
-
-
-
 ##
+metric.data.frame[metric.data.frame$dataset=='CovidT',1]='COVID'
 metric.data.frame.part <- metric.data.frame %>% filter(method!='supPCA'&method!='PCA')
+
 metric.data.frame.part[metric.data.frame.part$metric=='CS','Scores'] =  -0.5*log(metric.data.frame.part[metric.data.frame.part$metric=='CS','Scores'])
 metric.data.frame.part[metric.data.frame.part$metric=='CS','metric'] = '-0.5log(CSM)'
 metric.plot <- ggplot(metric.data.frame.part,aes(x=dataset,y=Scores,fill=method))+
@@ -556,8 +530,8 @@ a=plot_grid(plotlist = synthetic.plot,ncol=3,labels = letters[1:9],
 print(a)
 dev.off()
 
-pdf(file = paste0(fig.dir,"COVID Data.pdf"),width=15,height=15)
-a=plot_grid(plotlist = covid.plot,ncol=3,labels = letters[1:9],
+pdf(file = paste0(fig.dir,"CovidT Data.pdf"),width=15,height=15)
+a=plot_grid(plotlist = CovidT.plot,ncol=3,labels = letters[1:9],
             label_size = 20,label_fontface ='bold',scale=0.95)
 print(a)
 dev.off()
@@ -565,6 +539,95 @@ dev.off()
 pdf(file = paste0(fig.dir,"Metric.pdf"),width=25,height=15)
 print(metric.plot)
 dev.off()
+
+
+######################  EB  ########################
+library(reticulate)
+source_python("EB.py")
+EBdata <- EB_preprocess(paste0(dir,"/COVID"))
+count <- EBdata[[1]]
+label <- EBdata[[2]]
+rm(EBdata)
+row.names(count) <- 1:nrow(count)
+colnames(count) <- 1:ncol(count)
+set.seed(123)
+id <- sample(1:nrow(count),3000)
+EBpart <- count[id,]
+labelEB <- label[id]
+EB.label <- as.numeric(as.factor(labelEB))
+#labelEB.refine <- label.refine[id]
+EB <- RunSeurat(t(EBpart),npcs=20,nfeature = 3000)
+EB.pca      <- EB@reductions$pca@cell.embeddings
+EB.umap     <- EB@reductions$umap@cell.embeddings
+EB.tsne     <- EB@reductions$tsne@cell.embeddings
+EB.scale    <- as.matrix(EB@assays$SCT@scale.data)
+EB.mds <- read.csv(paste0(result.dir,'EB_MDS.csv'),header=F)
+EB.suppca <- read.csv(paste0(result.dir,'EB_supPCA.csv'),header=F)
+EB.supumap <- read.csv(paste0(result.dir,'EB_supUMAP.csv'),header=F)
+EB.supcpm_euclidean <- supCPM(EB.pca[,1:20],EB.label,dist='euclidean',niter1=300,niter2=700,seed=40,ratio=0.7,factor=1.3,init=F)
+EB.supcpm_geodesic <- supCPM(EB.pca[,1:20],EB.label,dist='geodesic',k=10, niter1=300,niter2=700,degree=1,seed=40,ratio=0.7,init=F)
+EB.cpm <- supCPM(EB.pca[,1:20],EB.label,dist='geodesic',k=10, niter1=300,niter2=0,degree=1,seed=40,ratio=0,init=F,factor=1)
+
+EB.celltype <- factor(c("Day 0-3","Day 6-9","Day 12-15","Day 18-21","Day 24-27"))
+levels(EB.celltype) <- c("Day 0-3","Day 6-9","Day 12-15","Day 18-21","Day 24-27")
+EB.result <- list()
+for(i in 1:9){
+  result <- eval(str2lang(paste0("EB.",tolower(plot.title[i]))))
+  colnames(result) <- paste0('V',1:ncol(result))
+  EB.result[[i]] <- as.data.frame(result)
+}
+
+
+EB.plot <- list()
+len <- max(abs(diff(range(EB.result[[1]]$V1))),abs(diff(range(EB.result[[1]]$V2))))
+midx <- sum(range(EB.result[[1]]$V1))/2
+midy <- sum(range(EB.result[[1]]$V2))/2
+x <- c(midx-len/2,midx+len/2)
+y <- c(midy-len/2,midy+len/2)
+EB.plot[[1]] <- ggplot(data.frame(EB.result[[1]][c(1,5,2,3,4),]),aes(x=V1,y=V2,size=V3,color=EB.celltype))+
+  geom_point()+
+  ggtitle(plot.title[1])+
+  theme(panel.grid.major=element_blank(),panel.grid.minor=element_blank(),panel.background=element_blank(),axis.line=element_line(colour='black'))+
+  xlab(paste(plot.title[1],1))+ylab(paste(plot.title[1],2))+
+  scale_x_continuous(labels = NULL)+scale_y_continuous(labels = NULL)+
+  theme(plot.title = element_text(hjust = 0.5,size=20))+labs(color ="Time")+
+  scale_color_viridis_d()+
+  theme(legend.position = c(0.3, 0.2),legend.key.size = unit(15,'pt'),
+        legend.title = element_text(size=11))+
+  guides(size=FALSE,color=guide_legend(ncol=2))+
+  coord_equal(xlim=x,ylim=y)
+for (i in 2:9){
+  len <- max(abs(diff(range(EB.result[[i]]$V1))),abs(diff(range(EB.result[[i]]$V2))))
+  midx <- sum(range(EB.result[[i]]$V1))/2
+  midy <- sum(range(EB.result[[i]]$V2))/2
+  x <- c(midx-len/2,midx+len/2)
+  y <- c(midy-len/2,midy+len/2)
+  EB.plot[[i]] <- ggplot(data.frame(EB.result[[i]]),aes(x=V1,y=V2))+
+    geom_point(aes(color=as.factor(EB.label)),size=0.5)+
+    ggtitle(plot.title[i])+
+    scale_color_viridis_d()+
+    theme(panel.grid.major=element_blank(),panel.grid.minor=element_blank(),panel.background=element_blank(),axis.line=element_line(colour='black'))+
+    xlab(paste(plot.title[i],1))+ylab(paste(plot.title[i],2))+
+    scale_x_continuous(labels = NULL)+scale_y_continuous(labels = NULL)+
+    theme(plot.title = element_text(hjust = 0.5,size=20))+
+    coord_equal(xlim=x,ylim=y)+theme(legend.position="none")
+}
+
+pdf(file = paste0(fig.dir,"EB Data.pdf"),width=15,height=15)
+a=plot_grid(plotlist = EB.plot,ncol=3,labels = letters[1:9],
+            label_size = 20,label_fontface ='bold',scale=0.95)
+print(a)
+dev.off()
+
+
+
+
+
+
+
+
+
+
 
 
 

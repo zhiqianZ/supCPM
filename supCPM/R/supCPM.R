@@ -86,8 +86,8 @@ supCPM <- function(data,label,ratio=0.7,no_dims=2,compel_force=1,dist='euclidean
   }else{
     stop('Input dist should be either \'euclidean\' or \'geodesic\' ')
   }
-  diag(D) =  0
-  D = D/max(D)
+ # diag(D) =  0
+ #  D = D/max(D)
   # compute the Capacity adjusted distance
   D1 = cdist(D,no_dims,compel_force,epsilon)
   # could be improved
@@ -100,8 +100,6 @@ supCPM <- function(data,label,ratio=0.7,no_dims=2,compel_force=1,dist='euclidean
   }
   D1[L_tilde==0] = D1[L_tilde==0] * factor
   n = nrow(D)
-  D <- D / max(D)
-  D[D<.Machine$double.xmin] <- .Machine$double.xmin
   # change the distances to probabilities
   P_D <- 1/((D1^2)^((1+degree)/2))
   P <- P_D/sum(P_D)
@@ -151,7 +149,7 @@ supCPM <- function(data,label,ratio=0.7,no_dims=2,compel_force=1,dist='euclidean
   }
   }
   ydata_temp = ydata
-  epsilon <- epsilon/5e2
+  epsilon <- epsilon/1e3
   #P = P*4
   if(niter2>0){
   for( iter in 1:niter2){
