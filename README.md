@@ -8,6 +8,8 @@ To find out the details of the supCPM, you could check out our preprint in BioRx
 
 [Zhiqian Zhai, Yu L. Lei, Rongrong Wang, Yuying Xie, **Supervised Capacity Preserving Mapping: A Clustering Guided Visualization Method for scRNAseq data**. *BioRxiv 2021.06.18.448900*](https://doi.org/10.1101/2021.06.18.448900)
 
+And we greatly appreatiate Dr. Elnaz Barshan and Dr. Ali Ghodsi for providing us the codes of SPCA. [[Barshan, E. et al. (2011). Supervised principal component analysis: Visualization, classification and regression on subspaces and submanifolds. Pattern Recognition, 44(7), 1357–1371.](https://doi.org/10.1016/j.patcog.2010.12.015) ]
+
 ### Contents
 * [Contents of Files in the Respository](#contents-of-files-in-the-respository)
 * [R](#r)
@@ -170,7 +172,7 @@ RNAmix.seurat <- RunTSNE(RNAmix.seurat, dims = 1:10)
 
 #### Run supCPM and CPM
 With the labels from SNN based clustering in Seurat and first 10 PCs, we are ready to run the code of supCPM and CPM. The settings for other visualization methods used in our paper could be found in the file 'RunCPM.m' in detail. We use supUMAP from <https://www.mathworks.com/matlabcentral/fileexchange/71902-uniform-manifold-approximation-and-projection-umap> 
-and supPCA codes from Prof. Ali Ghodsi. 
+and the codes of supPCA are provided by SPCA authors Dr. Ali Ghodsi and Dr. Elnaz Barshan. 
 
 Run the CPM (niter > change, factor=1 and degree =1)
 ``` 
