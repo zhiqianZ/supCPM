@@ -60,7 +60,7 @@ supCPM_downsample = function(data,label,alpha =0.02,no_dims=2,compel_force=0,dis
   data_downsample = data[ind,]
   label_downsample = label[ind]
   print(dim(data_downsample))
-  embed = supCPM(data_downsample,label_downsample,no_dims,compel_force,dist,degree,ratio,k,niter1,niter2,seed,factor,verbose,init)
+  embed = supCPM(data_downsample,label_downsample,no_dims=no_dims,compel_force=compel_force,dist=dist,degree=degree,ratio=ratio,k=k,niter1=niter1,niter2=niter2,seed=seed,factor=factor,verbose=verbose,init=init)
   embed_recover = matrix(0,n,no_dims)
   embed_recover[ind,] = embed
   rsmall = dist(embed_recover[base_id,])
