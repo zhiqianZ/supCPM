@@ -123,7 +123,7 @@ Here is a short demo for the installation and running supCPM_downsample:
     conda_create("supCPM-sketch")
     use_condaenv("supCPM-sketch")
     py_install("geosketch", envname="supCPM-sketch",pip=T)
-    supcpm = supCPM_downsample(pca, label, alpha=0.1, niter1 = 300, niter2 = 300, ratio=0.5, return.idx=T)
+    supcpm = supCPM_downsample(pca, label, alpha=0.1, return.idx=T)
     supCPM = supcpm$supCPM
     skectch_label = supcpm$idx
 
