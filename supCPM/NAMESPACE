@@ -3,6 +3,8 @@
 export(VisualMetric)
 export(supCPM)
 export(supCPM_downsample)
+import(RcppAnnoy)
 import(igraph)
 import(pracma)
+import(reticulate)
 importFrom(DescTools,Small)

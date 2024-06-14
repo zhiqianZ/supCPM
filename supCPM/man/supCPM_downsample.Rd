@@ -7,7 +7,7 @@
 supCPM_downsample(
   data,
   label,
-  alpha = 0.02,
+  alpha = 0.1,
   no_dims = 2,
   compel_force = 0,
   dist = "euclidean",
@@ -18,8 +18,11 @@ supCPM_downsample(
   niter2 = 700,
   seed = 42,
   factor = 1.3,
+  epsilon = 1,
+  lr = 500,
   verbose = T,
-  init = T
+  init = T,
+  return.idx = F
 )
 }
 \arguments{
@@ -27,7 +30,7 @@ supCPM_downsample(
 
 \item{label}{vector; The label vector indicating which cluster that each cell belongs to.}
 
-\item{alpha}{numeric; The quantile of distance pairs, which is used to determine the threshold for downsampling.}
+\item{alpha}{numeric; The proportion of cells to downsample (default is 0.1).}
 
 \item{no_dims}{integer; The dimensionality of the embedding space (default is 2).}
 
@@ -49,14 +52,16 @@ supCPM_downsample(
 
 \item{factor}{numeric; The factor multiples on the high-dimensional distance matrix between different clusters.}
 
-\item{verbose}{logical; Whether the progress of the objective function should be printed (default is TRUE).}
-
-\item{init}{logical; Whether to ues the random initialization or not. If the init=T,
-then the initialization will be the MDS of the adjusted capacity distance matrix. (default is FALSE)}
-
 \item{epsilon}{numeric; The multiple of the default epsilon, which is used in converting distance to probability; Default value is 1.}
 
 \item{lr}{numeric; The learning rate for optimization. Default value is 500.}
+
+\item{verbose}{logical; Whether the progress of the objective function should be printed (default is TRUE).}
+
+\item{init}{logical; Whether to use the random initialization or not. If the init=T,
+then the initialization will be the MDS of the adjusted capacity distance matrix. (default is FALSE)}
+
+\item{return.idx}{logical; Whether to return the indices of cells that are downsampled to actually run the supCPM algorithm (default is FALSE).}
 }
 \value{
 Returns an matrix containing supCPM coordinates in the embedding dimenisons.
@@ -66,7 +71,14 @@ Run supCPM visualization on the data matrix. supCPM is a clustering guided visua
 supCPM requires both high dimensional data and label information as input. Labels could be obtained by clustering algorithm or experiments.
 With the adjustment of parameters, supCPM could also output the result of CPM (Capacity Preserving Mapping).
 }
+\details{
+supCPM downsample use Geometric sketching to downsample a subset of cells to run the supCPM algoirthm, and the remaining unselected cell's visualization coordinates will be projected the center of its kNN among the downsampled cells plus a random perturbation.
+
+Prior to run this function, you need to install reticulate and python package geoskech first.
+}
 \references{
 Zhiqian Zhai, Yu L. Lei, Rongrong Wang, Yuying Xie, Supervised Capacity Preserving Mapping: A Clustering Guided Visualization Method for scRNAseq data,
 bioRxiv 2021.06.18.448900; doi: https://doi.org/10.1101/2021.06.18.448900
+
+geometric sketching algorithm described by Brian Hie, Hyunghoon Cho, Benjamin DeMeo, Bryan Bryson, and Bonnie Berger in "Geometric sketching compactly summarizes the single-cell transcriptomic landscape", Cell Systems (2019).
 }
