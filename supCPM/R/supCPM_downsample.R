@@ -74,7 +74,8 @@ supCPM_downsample = function(data,label,alpha =0.1,
     Annoy$build(50)
     neighbor.size = min(10, length(idx_subsampled))
     NN = t(sapply(1:length(idx_new), function(i) idx_subsampled[Annoy$getNNsByVector(as.vector(data[idx_new[i],]), neighbor.size+1)+1]))
-    embed_recover[idx_new, ] = t(apply(NN,1,function(idx) colMeans(embed_recover[idx,]))) + rnorm(1,0, mean = sqrt(min_dist/2))
+    impute = t(apply(NN,1,function(idx) colMeans(embed_recover[idx,])))
+    embed_recover[idx_new, ] = impute + matrix(rnorm(nrow(impute)*ncol(impute),0, mean = sqrt(min_dist/no_dims)),nrow=nrow(impute))
   }
   if(return.idx==T){
     return(list(supCPM=embed_recover,idx=select))
