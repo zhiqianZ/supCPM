@@ -47,7 +47,7 @@ supCPM_downsample = function(data,label,alpha =0.1,
   sketch.indices = unlist(sketch.indices)
   if(sum(table(label[sketch.indices])<10)>0){
     #if there is any cell types contains fewer than 10 cells after downsampling, use all
-    celltype = names(which(table(label[sketch.indices]))<10)
+    celltype = names(which(table(label[sketch.indices])<10))
     sketch.indices = union(sketch.indices,which(label%in%celltype))
   }
   data_downsample = data[sketch.indices,]
@@ -57,6 +57,7 @@ supCPM_downsample = function(data,label,alpha =0.1,
                  seed=seed,factor=factor,verbose=verbose,init=init,
                  epsilon=epsilon,lr=lr
                  )
+  saveRDS(embed,"~/supCPM_YueSongWu/08242024/test.rds")
   embed_recover = matrix(0,n,no_dims)
   embed_recover[sketch.indices,] = embed
   select = rep(0, length(label))
@@ -66,16 +67,18 @@ supCPM_downsample = function(data,label,alpha =0.1,
     idx = which(label==i)
     idx_subsampled = idx[idx%in%sketch.indices]
     idx_new = idx[!idx%in%sketch.indices]
-    d = as.matrix(distances::distances(embed[label_downsample==i,]))
-    min_dist = min(d[d!=0])
-    Annoy <- new(AnnoyEuclidean, ncol(data[idx_subsampled,]))
-    Annoy$setSeed(seed)
-    for (i in 1:length(idx_subsampled)) Annoy$addItem(i-1, data[idx_subsampled[i],])
-    Annoy$build(50)
-    neighbor.size = min(10, length(idx_subsampled))
-    NN = t(sapply(1:length(idx_new), function(i) idx_subsampled[Annoy$getNNsByVector(as.vector(data[idx_new[i],]), neighbor.size+1)+1]))
-    impute = t(apply(NN,1,function(idx) colMeans(embed_recover[idx,])))
-    embed_recover[idx_new, ] = impute + matrix(rnorm(nrow(impute)*ncol(impute),0, mean = sqrt(min_dist/no_dims)),nrow=nrow(impute))
+    if(length(idx_new) != 0){
+      d = as.matrix(distances::distances(embed[label_downsample==i,]))
+      min_dist = min(d[d!=0])
+      Annoy <- new(AnnoyEuclidean, ncol(data[idx_subsampled,]))
+      Annoy$setSeed(seed)
+      for (i in 1:length(idx_subsampled)) Annoy$addItem(i-1, data[idx_subsampled[i],])
+      Annoy$build(50)
+      neighbor.size = min(10, length(idx_subsampled))
+      NN = t(sapply(1:length(idx_new), function(i) idx_subsampled[Annoy$getNNsByVector(as.vector(data[idx_new[i],]), neighbor.size+1)+1]))
+      impute = t(apply(NN,1,function(idx) colMeans(embed_recover[idx,])))
+      embed_recover[idx_new, ] = impute + matrix(rnorm(nrow(impute)*ncol(impute), 0, sd = sqrt(min_dist/no_dims)),nrow=nrow(impute))
+    }
   }
   if(return.idx==T){
     return(list(supCPM=embed_recover,idx=select))
